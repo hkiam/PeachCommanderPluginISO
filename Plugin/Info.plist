@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key><string>ISO9660</string>
+	<key>CFBundleExecutable</key><string>ISO9660</string>
+	<key>CFBundlePackageType</key><string>BNDL</string>
+	<key>CFBundleIdentifier</key><string>com.peachcommander.plugin.iso</string>
+	<key>CFBundleShortVersionString</key><string>1.0.0</string>
+	<key>CFBundleVersion</key><string>1</string>
+	<key>CFBundleDevelopmentRegion</key><string>en</string>
+
+	<key>PCPluginType</key><string>pcx</string>
+	<key>PCPluginAPIVersion</key><integer>1</integer>
+	<key>PCPluginName</key><string>ISO / UDF Disc Images</string>
+
+	<!-- The stable key the host stores this plugin's on/off state and file associations under.
+	     Without it the display name is used, so renaming the plugin would lose the user's
+	     setting. -->
+	<key>PCPluginIdentifier</key><string>com.peachcommander.plugin.iso</string>
+	<key>PCPluginVersion</key><string>1.0.0</string>
+	<key>PCPluginDescription</key>
+	<string>Opens CD, DVD and Blu-ray images (ISO 9660, Joliet, Rock Ridge, UDF) as browsable folders, including the boot images a bootable disc carries.</string>
+
+	<!-- `iso` is the point: the host consults an enabled packer plugin BEFORE its built-in
+	     readers, so declaring it here is the whole of what makes this plugin take over from the
+	     bsdtar shim — no change on the host's side.
+	     `udf` and `img` are claimed too; anything else is caught by content, below. -->
+	<key>PCPluginExtensions</key><string>iso;udf;img</string>
+
+	<!-- The oldest version this was actually tried against, not the newest available. The plugin
+	     uses one optional export (ReadEntryData) that older hosts simply do not look for, so it
+	     degrades rather than breaking, and demanding a newer host would exclude people for
+	     nothing. -->
+	<key>PCPluginMinHostVersion</key><string>0.8.0</string>
+</dict>
+</plist>

@@ -1,0 +1,16 @@
+/* SPDX-License-Identifier: Apache-2.0
+   English is the source language: every key equals its value. The file exists so the bundle has a
+   development region and so a translator can see the full list of keys in one place. */
+"Disc image" = "Disc image";
+"Volume" = "Volume";
+"Volume (Joliet)" = "Volume (Joliet)";
+"Volume set" = "Volume set";
+"System" = "System";
+"Publisher" = "Publisher";
+"Prepared by" = "Prepared by";
+"Application" = "Application";
+"Created" = "Created";
+"Names read as" = "Names read as";
+"Size" = "Size";
+"bytes" = "bytes";
+"Listed by the Peach Commander ISO / UDF plugin." = "Listed by the Peach Commander ISO / UDF plugin.";

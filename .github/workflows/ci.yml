@@ -1,0 +1,63 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: PeachCommanderPluginISO }
+
+      # A checkout beside this one, which is what build.sh looks for first and what a developer
+      # has locally. The tag is pinned so a change to the SDK cannot break this build silently.
+      - uses: actions/checkout@v4
+        with:
+          repository: hkiam/PeachCommanderPluginSDK
+          path: PeachCommanderPluginSDK
+          ref: main
+
+      - name: Fixtures are present and unchanged
+        working-directory: PeachCommanderPluginISO
+        run: |
+          # The fixtures are committed, because hdiutil's output is not byte-reproducible and a
+          # regenerated image would show up as an unexplained diff on every run. What CI checks is
+          # that the committed ones still match the manifest.
+          fail=0
+          while read -r key value; do
+            case "$key" in
+              file:)   name="$value" ;;
+              sha256:) actual="$(shasum -a 256 "Tests/ISOPluginTests/Fixtures/$name" | cut -d' ' -f1)"
+                       if [ "$actual" != "$value" ]; then
+                         echo "FAIL: $name is $actual, manifest says $value"; fail=1
+                       else
+                         echo "ok: $name"
+                       fi ;;
+            esac
+          done < Tests/ISOPluginTests/Fixtures/manifest.txt
+          exit $fail
+
+      - name: Test
+        working-directory: PeachCommanderPluginISO
+        run: swift test
+
+      - name: Build the plugin bundle
+        working-directory: PeachCommanderPluginISO
+        run: ./build.sh dist --package
+
+      # The bundle has to pass the host's own admission checks, on both architectures, before it is
+      # ever attached to a release.
+      - name: Conformance
+        run: |
+          swift run --package-path PeachCommanderPluginSDK pcplug-validate \
+            PeachCommanderPluginISO/dist/ISO9660.pcxplugin \
+            --open PeachCommanderPluginISO/Tests/ISOPluginTests/Fixtures/udf.iso
+          swift run --package-path PeachCommanderPluginSDK pcplug-validate \
+            "$(ls PeachCommanderPluginISO/dist/*.pcplug)"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plugin-package
+          path: PeachCommanderPluginISO/dist/*.pcplug

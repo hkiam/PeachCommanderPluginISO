@@ -1,0 +1,16 @@
+/* SPDX-License-Identifier: Apache-2.0
+   German strings for the ISO / UDF plugin. The English source text is the key; a key with no entry
+   here falls back to it, so an incomplete file loses nothing. */
+"Disc image" = "Datenträgerabbild";
+"Volume" = "Datenträger";
+"Volume (Joliet)" = "Datenträger (Joliet)";
+"Volume set" = "Datenträgersatz";
+"System" = "System";
+"Publisher" = "Herausgeber";
+"Prepared by" = "Erstellt von";
+"Application" = "Anwendung";
+"Created" = "Erstellt am";
+"Names read as" = "Namen gelesen als";
+"Size" = "Größe";
+"bytes" = "Bytes";
+"Listed by the Peach Commander ISO / UDF plugin." = "Aufgelistet vom ISO-/UDF-Plugin für Peach Commander.";

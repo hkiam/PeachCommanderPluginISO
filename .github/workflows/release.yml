@@ -1,0 +1,53 @@
+name: Release
+on:
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+
+jobs:
+  release:
+    runs-on: macos-14
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: PeachCommanderPluginISO }
+      - uses: actions/checkout@v4
+        with:
+          repository: hkiam/PeachCommanderPluginSDK
+          path: PeachCommanderPluginSDK
+          ref: main
+
+      # The tag, the manifest and the package name are three places one version is written. They
+      # are checked against each other here rather than after somebody downloads the wrong one.
+      - name: The tag matches PCPluginVersion
+        working-directory: PeachCommanderPluginISO
+        run: |
+          DECLARED=$(/usr/libexec/PlistBuddy -c "Print :PCPluginVersion" Plugin/Info.plist)
+          TAG="${GITHUB_REF_NAME#v}"
+          if [ "$DECLARED" != "$TAG" ]; then
+            echo "tag $GITHUB_REF_NAME says $TAG but Plugin/Info.plist says $DECLARED" >&2
+            exit 1
+          fi
+          echo "version $DECLARED"
+
+      - name: Test
+        working-directory: PeachCommanderPluginISO
+        run: swift test
+
+      - name: Build the package
+        working-directory: PeachCommanderPluginISO
+        run: ./build.sh dist --package
+
+      - name: Conformance
+        run: |
+          swift run --package-path PeachCommanderPluginSDK pcplug-validate \
+            "$(ls PeachCommanderPluginISO/dist/*.pcplug)"
+
+      - name: Publish
+        working-directory: PeachCommanderPluginISO
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/*.pcplug \
+            --title "ISO / UDF Disc Images $GITHUB_REF_NAME" \
+            --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}

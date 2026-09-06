@@ -1,0 +1,7 @@
+; Total Commander's install descriptor, which Peach Commander reads when installing a package.
+; It names which bundle to install and what to tell the user before anything is loaded.
+[plugininstall]
+type=pcx
+file=ISO9660.pcxplugin
+description=ISO / UDF disc images — browse CD, DVD and Blu-ray images as folders
+defaultdir=ISO9660

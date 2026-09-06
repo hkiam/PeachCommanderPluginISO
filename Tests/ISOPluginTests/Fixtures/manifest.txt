@@ -1,0 +1,19 @@
+# Fixtures for the Peach Commander ISO / UDF plugin.
+# Written by hdiutil (macOS), never by this plugin. Regenerate with Tools/make-fixtures.sh.
+
+file:    iso9660.iso
+sha256:  54dbc4ddae92ed11c902ad26a2a8d4118b7ee79643d1b292973ba44036279d5e
+command: hdiutil makehybrid -o iso9660.iso -iso <tree>
+
+file:    joliet.iso
+sha256:  22dbe9576961bdb2a3491eba6e22311da706d0fdfeeee22e7f354777b25010fa
+command: hdiutil makehybrid -o joliet.iso -iso -joliet <tree>
+
+file:    udf.iso
+sha256:  94e233e0b9b8053c747053c3211c086f07be02d5d7ce4d483cfc834f5cd33247
+command: hdiutil makehybrid -o udf.iso -udf <tree>
+
+file:    hybrid.iso
+sha256:  3d394e01f7fcf646204fdc1f20473f7ac4db95105cb09e8a1564cc9397071f13
+command: hdiutil makehybrid -o hybrid.iso -iso -joliet -udf <tree>
+
