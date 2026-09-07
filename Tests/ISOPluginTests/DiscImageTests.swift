@@ -171,8 +171,11 @@ final class DiscImageTests: XCTestCase {
     // MARK: - Metadata
 
     func test_timestampsAreReal() throws {
-        // The bsdtar-backed path in the host reports no modification time at all; this is the
-        // difference, so it is asserted rather than assumed.
+        // The bsdtar-backed path in the host gives every member the *archive file's* mtime, because
+        // ShellArchiveSource reports `modified: nil` and ArchiveFS falls back to the container's
+        // date. So the difference is not "a date versus none" — it is each file's own date versus
+        // one date for all of them, which is the more misleading of the two failures and the reason
+        // this is asserted rather than assumed.
         let image = try image("iso9660.iso")
         let entry = try XCTUnwrap(image.entries.first { $0.path == "README.TXT" })
         let year = Calendar(identifier: .gregorian).component(.year, from: entry.modified)

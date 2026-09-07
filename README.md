@@ -23,7 +23,7 @@ plugin replaces that path, and the difference is not cosmetic:
 |---|---|---|
 | ISO 9660, Joliet, Rock Ridge | yes | yes |
 | **UDF** | **cannot open the file at all** | yes |
-| Modification times | dropped — every file shows none | read from the disc |
+| Modification times | every file reports the *container's* timestamp | each file's own, from the disc |
 | Reading one file | a subprocess that re-scans the image from the start | a seek |
 | Boot images (El Torito) | not listed | listed under `[boot]/` |
 | Volume label, publisher, date | not shown | `.disc-info.txt` at the root |
