@@ -39,10 +39,20 @@ jobs:
           swift run --package-path .build/checkouts/PeachCommanderPluginSDK \
             pcplug-validate "$(ls dist/*.pcplug)"
 
+      # A .zip beside the .pcplug, byte-for-byte the same package under a name older hosts accept.
+      # Peach Commander before 0.9.0 does not know the .pcplug extension: its install chooser filters
+      # on public.zip-archive, an undeclared type does not conform to it, and a double-click reaches
+      # nothing. Telling those users to rename a download is a worse answer than shipping both.
+      - name: A .zip for hosts that do not know the extension yet
+        working-directory: PeachCommanderPluginISO
+        run: |
+          for pkg in dist/*.pcplug; do cp "$pkg" "dist/$(basename "${pkg%.pcplug}").zip"; done
+          ls -l dist/
+
       - name: Publish
         working-directory: PeachCommanderPluginISO
         run: |
-          gh release create "$GITHUB_REF_NAME" dist/*.pcplug \
+          gh release create "$GITHUB_REF_NAME" dist/*.pcplug dist/*.zip \
             --title "ISO / UDF Disc Images $GITHUB_REF_NAME" \
             --generate-notes
         env:

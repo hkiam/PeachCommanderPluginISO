@@ -36,17 +36,25 @@ and disabling it puts the old behaviour back.
 
 ## Install
 
-Download `ISO9660-<version>.pcplug` from the [releases](../../releases) and open it any of these
-ways — all four show the same confirmation first:
+Download from the [releases](../../releases). Which file depends on the version of Peach Commander
+you have, and the difference is only about how it installs — the plugin itself is the same:
+
+**Peach Commander 0.9.0 or later** — take `ISO9660-<version>.pcplug` and open it any of these ways.
+All four show the same confirmation first, naming the plugin and the file types it will take over:
 
 - double-click it in the Finder
 - press Enter on it in a Peach Commander panel
 - drag it onto Configuration ▸ Plugins…
 - Configuration ▸ Plugins… ▸ **Install…**
 
-Requires Peach Commander 0.8.0 or later. On an older version the extra abilities degrade rather
-than break: the plugin uses one optional export (`ReadEntryData`) that older hosts do not look for,
-and falls back to whole-file extraction when it is not asked for.
+**Peach Commander 0.8.x** — take `ISO9660-<version>.zip` instead, and use
+Configuration ▸ Plugins… ▸ **Install from Folder…**. Those versions do not know the `.pcplug`
+extension, so the file chooser will not offer it and a double-click does nothing; the `.zip` is the
+same package under a name they do accept. Both files contain exactly the same plugin bundle.
+
+The plugin needs 0.8.0 or later to run at all (`PCPluginMinHostVersion`). It uses one optional
+export, `ReadEntryData`, that hosts before 0.9.0 do not look for — there it falls back to whole-file
+extraction rather than failing.
 
 ## Build from source
 
