@@ -11,6 +11,7 @@
 // OpenArchive → (ReadHeaderEx → ProcessFile)* → CloseArchive. No part of the plugin is imported.
 
 import XCTest
+import CPeachCommanderPlugin
 
 final class PluginABITests: XCTestCase {
     /// Built once per test run. Building it per test cost about a second each, for an artefact
@@ -104,8 +105,20 @@ final class PluginABITests: XCTestCase {
     private typealias ReadEntryFn = @convention(c) (UnsafeMutableRawPointer?, UnsafePointer<CChar>?, Int64, Int64,
                                                     UnsafeMutableRawPointer?, UnsafeMutablePointer<Int64>?) -> Int32
 
-    /// The size of PcHeaderDataEx: fileName[1024] + 3×int64 + 2×uint32 + int + reserved[64].
+    // The two fields this test reads out of PcHeaderDataEx by hand, and the buffer it reads them
+    // into. Hand-computed on purpose — the point is to poke at the raw bytes the way the host does,
+    // not to let Swift's importer do the arithmetic — but checked against the real layout in
+    // `test_theHeaderOffsetsThisFileAssumesAreStillTrue`, because a struct that gained a field
+    // would otherwise leave every assertion here reading a neighbouring one and passing anyway.
+    private static let unpSizeOffset = 1024 + 8
+    private static let fileAttrOffset = 1024 + 24
     private static let headerSize = 1024 + 8 * 3 + 4 * 2 + 4 + 64 + 8    // + padding headroom
+
+    func test_theHeaderOffsetsThisFileAssumesAreStillTrue() {
+        XCTAssertEqual(MemoryLayout<PcHeaderDataEx>.offset(of: \.unpSize), Self.unpSizeOffset)
+        XCTAssertEqual(MemoryLayout<PcHeaderDataEx>.offset(of: \.fileAttr), Self.fileAttrOffset)
+        XCTAssertLessThanOrEqual(MemoryLayout<PcHeaderDataEx>.size, Self.headerSize)
+    }
 
     private func symbol<T>(_ handle: UnsafeMutableRawPointer, _ name: String, as type: T.Type) throws -> T {
         guard let pointer = dlsym(handle, name) else {
@@ -139,8 +152,8 @@ final class PluginABITests: XCTestCase {
             if rc == 10 { break }                                   // PC_E_END_ARCHIVE
             guard rc == 0 else { throw BuildFailure(description: "ReadHeaderEx returned \(rc)") }
             let name = String(cString: header.assumingMemoryBound(to: CChar.self))
-            let size = header.advanced(by: 1024 + 8).assumingMemoryBound(to: Int64.self).pointee  // unpSize
-            let attributes = header.advanced(by: 1024 + 24).assumingMemoryBound(to: UInt32.self).pointee
+            let size = header.advanced(by: Self.unpSizeOffset).assumingMemoryBound(to: Int64.self).pointee  // unpSize
+            let attributes = header.advanced(by: Self.fileAttrOffset).assumingMemoryBound(to: UInt32.self).pointee
             entries.append((name, size, attributes & 0x10 != 0))     // PC_ATTR_DIR
             XCTAssertEqual(process(archive, 0, nil, nil), 0, "ProcessFile(PC_SKIP) on \(name)")
         }

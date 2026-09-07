@@ -51,13 +51,16 @@ and falls back to whole-file extraction when it is not asked for.
 ## Build from source
 
 ```
-git clone https://github.com/hkiam/PeachCommanderPluginSDK.git
 git clone https://github.com/hkiam/PeachCommanderPluginISO.git
 cd PeachCommanderPluginISO
 ./build.sh                      # into ~/Library/Application Support/PeachCommander/plugins
 ./build.sh dist --package       # into ./dist, plus the .pcplug package
-swift test                      # 22 tests, including the plugin driven over its C ABI
+swift test                      # 23 tests, including the plugin driven over its C ABI
 ```
+
+The SDK is a SwiftPM dependency, so there is nothing else to clone — `build.sh` takes the headers
+from the resolved checkout. If you keep a clone of the SDK beside this one, it uses that instead, so
+you can work on both at once.
 
 `build.sh` is short on purpose — it is meant to be read. It is one `swiftc -emit-library` per
 architecture, `lipo`'d together, into a bundle directory with an `Info.plist`. That is the whole of
@@ -66,7 +69,7 @@ what a Swift plugin is.
 Check the result the way the host will:
 
 ```
-swift run --package-path ../PeachCommanderPluginSDK pcplug-validate \
+swift run --package-path .build/checkouts/PeachCommanderPluginSDK pcplug-validate \
     dist/ISO9660.pcxplugin --open some-image.iso
 ```
 

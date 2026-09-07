@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "peachcommanderpluginsdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/hkiam/PeachCommanderPluginSDK.git",
+      "state" : {
+        "revision" : "389bcc868cef464377b5bb1ac0ecfbad109578af",
+        "version" : "1.0.0"
+      }
+    }
+  ],
+  "version" : 2
+}

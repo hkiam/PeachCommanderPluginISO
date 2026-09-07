@@ -11,14 +11,6 @@ jobs:
       - uses: actions/checkout@v4
         with: { path: PeachCommanderPluginISO }
 
-      # A checkout beside this one, which is what build.sh looks for first and what a developer
-      # has locally. The tag is pinned so a change to the SDK cannot break this build silently.
-      - uses: actions/checkout@v4
-        with:
-          repository: hkiam/PeachCommanderPluginSDK
-          path: PeachCommanderPluginSDK
-          ref: main
-
       - name: Fixtures are present and unchanged
         working-directory: PeachCommanderPluginISO
         run: |
@@ -49,13 +41,16 @@ jobs:
 
       # The bundle has to pass the host's own admission checks, on both architectures, before it is
       # ever attached to a release.
+      # Against the SDK version this repository actually depends on — the resolved checkout —
+      # rather than against whatever is on the SDK's main branch today. A plugin has to pass the
+      # checks of the ABI it was built against.
       - name: Conformance
+        working-directory: PeachCommanderPluginISO
         run: |
-          swift run --package-path PeachCommanderPluginSDK pcplug-validate \
-            PeachCommanderPluginISO/dist/ISO9660.pcxplugin \
-            --open PeachCommanderPluginISO/Tests/ISOPluginTests/Fixtures/udf.iso
-          swift run --package-path PeachCommanderPluginSDK pcplug-validate \
-            "$(ls PeachCommanderPluginISO/dist/*.pcplug)"
+          SDK=.build/checkouts/PeachCommanderPluginSDK
+          swift run --package-path "$SDK" pcplug-validate \
+            dist/ISO9660.pcxplugin --open Tests/ISOPluginTests/Fixtures/udf.iso
+          swift run --package-path "$SDK" pcplug-validate "$(ls dist/*.pcplug)"
 
       - uses: actions/upload-artifact@v4
         with:

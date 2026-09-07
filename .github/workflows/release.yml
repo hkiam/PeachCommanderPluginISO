@@ -11,11 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: { path: PeachCommanderPluginISO }
-      - uses: actions/checkout@v4
-        with:
-          repository: hkiam/PeachCommanderPluginSDK
-          path: PeachCommanderPluginSDK
-          ref: main
 
       # The tag, the manifest and the package name are three places one version is written. They
       # are checked against each other here rather than after somebody downloads the wrong one.
@@ -39,9 +34,10 @@ jobs:
         run: ./build.sh dist --package
 
       - name: Conformance
+        working-directory: PeachCommanderPluginISO
         run: |
-          swift run --package-path PeachCommanderPluginSDK pcplug-validate \
-            "$(ls PeachCommanderPluginISO/dist/*.pcplug)"
+          swift run --package-path .build/checkouts/PeachCommanderPluginSDK \
+            pcplug-validate "$(ls dist/*.pcplug)"
 
       - name: Publish
         working-directory: PeachCommanderPluginISO

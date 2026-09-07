@@ -10,9 +10,10 @@ let package = Package(
     name: "PeachCommanderPluginISO",
     platforms: [.macOS(.v13)],
     dependencies: [
-        // A path dependency while the SDK repository has no published tag yet. Replace with:
-        //   .package(url: "https://github.com/hkiam/PeachCommanderPluginSDK.git", from: "1.0.0")
-        .package(path: "../PeachCommanderPluginSDK"),
+        // The published SDK, by URL — which is the line the documentation tells third parties to
+        // write, so this example had better be able to use it too. `build.sh` finds the headers in
+        // the resolved checkout, or in a sibling clone when you have one open beside this.
+        .package(url: "https://github.com/hkiam/PeachCommanderPluginSDK.git", from: "1.0.0"),
     ],
     targets: [
         .target(
@@ -25,7 +26,13 @@ let package = Package(
         .executableTarget(name: "isodump", dependencies: ["ISOPlugin"]),
         .testTarget(
             name: "ISOPluginTests",
-            dependencies: ["ISOPlugin"],
+            dependencies: [
+                "ISOPlugin",
+                // The headers, so the ABI test can check its hand-written struct offsets against
+                // the real layout. Depending on the *contract* is not the same as depending on the
+                // plugin, which that test deliberately does not.
+                .product(name: "CPeachCommanderPlugin", package: "PeachCommanderPluginSDK"),
+            ],
             resources: [.copy("Fixtures")]
         ),
     ]
