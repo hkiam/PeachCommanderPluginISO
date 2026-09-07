@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hkiam/PeachCommanderPluginSDK.git",
       "state" : {
-        "revision" : "389bcc868cef464377b5bb1ac0ecfbad109578af",
-        "version" : "1.0.0"
+        "revision" : "333d28fda459facb8d1a8a6ba95b566ee2f26cb2",
+        "version" : "1.0.1"
       }
     }
   ],
